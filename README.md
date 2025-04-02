@@ -1,4 +1,3 @@
-# config
 # 💫 About Me:
 🔭 I'm currently working on building a portfolio website using React to showcase my projects.<br>👯 I'm looking to collaborate on interesting web development projects, especially those focused on creative front-end design.<br>🤝 I'm looking for help with understanding advanced React concepts and best practices for state management.<br>🌱 I'm currently learning more about advanced JavaScript concepts and exploring backend development with Node.js.<br>💬 Ask me about my passion for front-end development and my journey learning React!<br>⚡ Fun fact: In my free time, I enjoy playing strategy video games and always look for the best approach to solve problems, both in games and in code!
 
