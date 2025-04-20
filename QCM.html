@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM Révision - Entrepôts de Données</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px; /* Default padding */
+            background-color: #f4f7f6;
+            color: #333;
+            font-size: 16px; /* Base font size */
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px; /* Default padding */
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: #005f73;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+         h2 {
+             margin-top: 40px;
+             border-bottom: 2px solid #0a9396;
+             padding-bottom: 10px;
+         }
+         .level-indicator h2 { /* More specific selector for the level indicator */
+             margin-top: 0;
+             margin-bottom: 15px;
+             font-size: 1.3em;
+             border-bottom: none; /* Remove double border */
+         }
+
+
+        .question-container {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #001219;
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+            display: none; /* Hide the actual radio button */
+        }
+
+        /* Style for the custom radio button appearance */
+         .options label::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            border: 2px solid #adb5bd;
+            border-radius: 50%;
+            vertical-align: middle;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+         }
+
+         .options input[type="radio"]:checked + label::before {
+            background-color: #0a9396;
+            border-color: #005f73;
+            background-clip: content-box; /* Make the inner dot smaller */
+            padding: 3px; /* Size of the inner dot */
+         }
+
+         .options input[type="radio"]:checked + label {
+            background-color: #e0f7fa;
+            border-color: #0a9396;
+         }
+
+        .options label:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        /* --- Enhanced Feedback Styling --- */
+        .feedback {
+            margin-top: 15px; /* Increased top margin */
+            padding: 12px;
+            border-radius: 4px;
+        }
+
+        .feedback.correct {
+            /* Slightly stronger green, darker text/border */
+            background-color: #cce8d4;
+            color: #0a361a;
+            border: 1px solid #a3d4b1;
+        }
+
+        .feedback.incorrect {
+            /* Slightly stronger red, darker text/border */
+            background-color: #f7d1d5;
+            color: #6f1a22;
+            border: 1px solid #f1b9be;
+        }
+
+        /* Styling for elements within the feedback box */
+        .feedback span { /* Apply display: block to spans inside */
+             display: block;
+        }
+        .feedback-status {
+            font-weight: bold;
+            margin-bottom: 8px; /* Space after status */
+        }
+        .feedback-correct-answer {
+            font-weight: bold;
+            margin-bottom: 10px; /* Space after correct answer */
+        }
+        .feedback-explanation {
+             /* No extra style needed unless desired */
+             line-height: 1.5; /* Slightly adjust line height if needed */
+        }
+        /* --- End Enhanced Feedback Styling --- */
+
+        .navigation {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        button {
+            background-color: #0a9396;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 5px 10px; /* Default margins */
+        }
+
+        button:hover {
+            background-color: #005f73;
+        }
+
+        button:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+        }
+
+        #score-container {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #e0f7fa;
+            border: 1px solid #94d2bd;
+            border-radius: 5px;
+            color: #005f73;
+        }
+        .hidden {
+            display: none;
+        }
+
+        /* --- Media Query for Responsiveness --- */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px; /* Reduce body padding */
+                font-size: 15px; /* Slightly smaller font */
+            }
+
+            .container {
+                padding: 15px; /* Reduce container padding */
+                margin: 10px auto;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+            .level-indicator h2 {
+                 font-size: 1.2em;
+            }
+
+
+            .question-container {
+                padding: 10px;
+            }
+
+            .options label {
+                padding: 8px;
+            }
+
+            button {
+                padding: 10px 15px; /* Adjust button padding */
+                font-size: 15px;
+                width: calc(50% - 10px); /* Make buttons take up more width */
+                margin: 5px; /* Adjust margin for stacking */
+            }
+             #finish-btn { /* Ensure finish button takes similar width */
+                 width: calc(50% - 10px);
+             }
+
+             #score-container {
+                 font-size: 1.1em;
+             }
+        }
+        /* --- End Media Query --- */
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Révision QCM : Entrepôts de Données</h1>
+        <p style="text-align: center;">Testez vos connaissances sur les concepts clés du cours.</p>
+
+        <div id="quiz-container">
+            <!-- Questions will be loaded here by JavaScript -->
+        </div>
+
+        <div id="navigation-container" class="navigation hidden">
+             <button id="prev-btn" onclick="prevQuestion()" disabled>Précédent</button>
+             <button id="next-btn" onclick="nextQuestion()">Suivant</button>
+             <button id="finish-btn" class="hidden" onclick="showResults()">Terminer le Quiz</button>
+        </div>
+
+        <div id="score-container" class="hidden">
+            Score Final : <span id="final-score">0</span> / <span id="total-questions">0</span>
+            <p id="result-message"></p>
+            <button onclick="restartQuiz()">Recommencer</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            // --- Niveau Basique ---
+            {
+                level: "Basique",
+                question: "Selon la définition de la diapo 8, un entrepôt de données (ED) est une collection de données qui est principalement :",
+                options: [
+                    "Orientée traitement, volatile et temps réel.",
+                    "Orientée sujet, intégrée, non volatile et historisée.",
+                    "Transactionnelle, normalisée et mise à jour fréquemment.",
+                    "Utilisée pour les opérations quotidiennes de l'entreprise."
+                ],
+                answer: "Orientée sujet, intégrée, non volatile et historisée.",
+                explanation: "La diapo 8 définit l'ED comme 'orientées sujet, intégrées, non volatiles et historiées'."
+            },
+            {
+                level: "Basique",
+                question: "Laquelle de ces fonctions N'EST PAS une fonction principale d'un Système d'Information (SI) mentionnée dans la diapo 4 ?",
+                options: [
+                    "Acquisition de l'information",
+                    "Analyse prédictive des données",
+                    "Mémorisation de l'information",
+                    "Diffusion de l'information"
+                ],
+                answer: "Analyse prédictive des données",
+                explanation: "La diapo 4 liste Acquisition, Mémorisation, Exploitation et Diffusion comme fonctions principales du SI. L'analyse prédictive est plus spécifique aux SAD (diapo 5)."
+            },
+            {
+                level: "Basique",
+                question: "Quel type de traitement est typiquement associé aux Systèmes d'Aide à la Décision (SAD) selon la diapo 11 ?",
+                options: [
+                    "OLTP (Online Transaction Processing)",
+                    "Traitement par lots (Batch Processing)",
+                    "OLAP (Online Analytical Processing)",
+                    "Traitement en temps réel (Real-time Processing)"
+                ],
+                answer: "OLAP (Online Analytical Processing)",
+                explanation: "La diapo 11 compare SIO (OLTP) et SAD (OLAP)."
+            },
+             {
+                level: "Basique",
+                question: "Dans un modèle dimensionnel, comment appelle-t-on la table centrale qui contient les mesures quantifiables ? (Diapo 14)",
+                options: [
+                    "Table de dimension",
+                    "Table de faits (Fact Table)",
+                    "Table de lookup",
+                    "Table de hiérarchie"
+                ],
+                answer: "Table de faits (Fact Table)",
+                explanation: "La diapo 14 identifie la table principale comme la 'Table de faits des ventes' contenant les mesures (Quantité, Coût, Montant)."
+            },
+             {
+                level: "Basique",
+                question: "Quel est le terme utilisé pour désigner les 'axes d'analyse' qui donnent un contexte aux mesures dans un entrepôt de données ? (Diapo 18)",
+                options: [
+                    "Faits (Facts)",
+                    "Mesures (Measures)",
+                    "Dimensions",
+                    "Indicateurs Clés (KPIs)"
+                ],
+                answer: "Dimensions",
+                explanation: "La diapo 18 définit les dimensions comme les 'Axes d'analyse (période, client)' qui donnent un contexte."
+            },
+            {
+                level: "Basique",
+                question: "Lequel de ces modèles est un type de modèle multidimensionnel mentionné dans la diapo 29 ?",
+                options: [
+                    "Modèle Relationnel",
+                    "Modèle Entité-Association",
+                    "Modèle en Flocon de Neige (Snowflake)",
+                    "Modèle Hiérarchique (base de données)"
+                ],
+                answer: "Modèle en Flocon de Neige (Snowflake)",
+                explanation: "La diapo 29 liste Étoile (Star), Flocon de Neige (Snowflake) et Constellation."
+            },
+             {
+                level: "Basique",
+                question: "Comment appelle-t-on le processus d'extraction, de transformation et de chargement des données dans un entrepôt ? (Mentionné dans le plan, diapo 2 et comparaison SIO/SAD diapo 11)",
+                options: ["SQL", "OLAP", "ETL", "SCD"],
+                answer: "ETL",
+                explanation: "ETL (Extract-Transform-Load) est le processus standard pour alimenter un entrepôt de données (Diapo 2, Diapo 11)."
+             },
+             {
+                level: "Basique",
+                question: "Quelle approche de conception d'entrepôt de données commence par analyser les besoins des décideurs ? (Diapo 37)",
+                options: ["Approche Ascendante (Bottom-Up)", "Approche Descendante (Top-Down)", "Approche Hybride", "Approche Agile"],
+                answer: "Approche Descendante (Top-Down)",
+                explanation: "La diapo 37 indique que l'approche Descendante est 'Basée sur les besoins des décideurs'."
+             },
+
+            // --- Niveau Moyen ---
+            {
+                level: "Moyen",
+                question: "Quelle est la différence principale entre les données d'un SI Opérationnel (SIO) et celles d'un SAD/Entrepôt de Données (ED) selon la diapo 11 ?",
+                options: [
+                    "Les données SIO sont agrégées, celles de l'ED sont détaillées.",
+                    "Les données SIO sont non volatiles, celles de l'ED sont volatiles.",
+                    "Les données SIO sont transactionnelles et actuelles, celles de l'ED sont agrégées et historisées.",
+                    "Les données SIO sont orientées sujet, celles de l'ED sont orientées processus."
+                ],
+                answer: "Les données SIO sont transactionnelles et actuelles, celles de l'ED sont agrégées et historisées.",
+                explanation: "La diapo 11 compare les données : SIO ('Transactionnelles, spécifiques et détaillées') vs SAD ('Agrégées et historisées')."
+            },
+            {
+                level: "Moyen",
+                question: "Pourquoi dit-on qu'un entrepôt de données est 'non-volatile' ? (Diapo 10)",
+                options: [
+                    "Parce que les données ne changent jamais.",
+                    "Parce que les données sont principalement utilisées en consultation et peu modifiées (sauf rafraîchissement).",
+                    "Parce que les données sont stockées sur des disques durs très stables.",
+                    "Parce que les données sont toujours agrégées."
+                ],
+                answer: "Parce que les données sont principalement utilisées en consultation et peu modifiées (sauf rafraîchissement).",
+                explanation: "La diapo 10 explique 'Non-volatiles' : utilisées en interrogation (consultation) et ne peuvent pas être modifiées (sauf cas de rafraîchissement)."
+            },
+            {
+                level: "Moyen",
+                question: "Quelle est la principale différence structurelle entre un modèle en étoile et un modèle en flocon de neige ? (Diapos 30 & 32)",
+                options: [
+                    "Le modèle étoile a plusieurs tables de faits, le flocon n'en a qu'une.",
+                    "Le modèle étoile utilise des clés étrangères, le flocon utilise des clés primaires.",
+                    "Les dimensions du modèle étoile sont dénormalisées, celles du flocon sont normalisées.",
+                    "Le modèle étoile est utilisé pour OLTP, le flocon pour OLAP."
+                ],
+                answer: "Les dimensions du modèle étoile sont dénormalisées, celles du flocon sont normalisées.",
+                explanation: "La diapo 30 montre l'étoile avec des dimensions simples (dénormalisées), tandis que la diapo 32 décrit le flocon comme ayant des 'dimensions normalisées'."
+            },
+             {
+                 level: "Moyen",
+                 question: "Qu'est-ce qu'une mesure 'semi-additive' selon la diapo 16 ?",
+                 options: [
+                    "Une mesure qui ne peut être additionnée sur aucune dimension.",
+                    "Une mesure qui peut être additionnée sur toutes les dimensions.",
+                    "Une mesure qui peut être additionnée (SUM) seulement sur certaines dimensions.",
+                    "Une mesure qui doit toujours être moyennée (AVERAGE)."
+                 ],
+                 answer: "Une mesure qui peut être additionnée (SUM) seulement sur certaines dimensions.",
+                 explanation: "La diapo 16 définit les mesures semi-additives comme utilisables avec SOMME 'que sur quelques dimensions' (ex: soldes bancaires)."
+            },
+            {
+                level: "Moyen",
+                question: "Quel est l'inconvénient majeur de la solution SCD Type 1 (écrasement) ? (Diapo 25)",
+                options: [
+                    "Elle complexifie les requêtes.",
+                    "Elle augmente considérablement la taille de la table de dimension.",
+                    "Elle entraîne la perte de l'historique des changements.",
+                    "Elle nécessite obligatoirement une clé de substitution."
+                ],
+                answer: "Elle entraîne la perte de l'historique des changements.",
+                explanation: "La diapo 25 souligne : 'Disparition des contributions du client aux ventes à Sfax...' après l'écrasement."
+            },
+            {
+                level: "Moyen",
+                question: "Quel problème principal la solution SCD Type 2 (nouvelle ligne) résout-elle par rapport au Type 1, et quelle technique utilise-t-elle souvent pour cela ? (Diapo 26)",
+                options: [
+                    "Résout la perte d'historique en utilisant une colonne 'Date de Modification'.",
+                    "Résout la complexité des requêtes en utilisant des vues matérialisées.",
+                    "Résout la perte d'historique en ajoutant une nouvelle ligne et en utilisant une clé de substitution.",
+                    "Résout la taille de la table en compressant les anciennes données."
+                ],
+                answer: "Résout la perte d'historique en ajoutant une nouvelle ligne et en utilisant une clé de substitution.",
+                explanation: "La diapo 26 explique qu'on insère une nouvelle ligne pour conserver l'historique et qu'on introduit une nouvelle clé ('clé de substitution') car la clé naturelle n'est plus unique."
+            },
+            {
+                level: "Moyen",
+                question: "Quel est le principal avantage de l'approche de conception Ascendante (Bottom-Up) et quel est son principal risque ? (Diapo 36)",
+                options: [
+                    "Avantage : Respecte les besoins utilisateurs ; Risque : Coûteux.",
+                    "Avantage : Entrepôt chargeable (buildable) ; Risque : Ne pas respecter les besoins des décideurs.",
+                    "Avantage : Rapide à implémenter ; Risque : Données non disponibles.",
+                    "Avantage : Pas de redondance ; Risque : Complexité."
+                ],
+                answer: "Avantage : Entrepôt chargeable (buildable) ; Risque : Ne pas respecter les besoins des décideurs.",
+                explanation: "La diapo 36 mentionne '+ Entrepôt chargeable' et '- Risque de ne pas respecter les besoins des décideurs'."
+            },
+            {
+                level: "Moyen",
+                question: "Qu'est-ce que la 'granularité' d'une table de faits représente ? (Diapo 17)",
+                options: [
+                    "Le nombre total d'enregistrements dans la table.",
+                    "Le type de base de données utilisé (relationnel, NoSQL).",
+                    "Le niveau de détail le plus bas des données enregistrées.",
+                    "Le nombre de dimensions liées à la table de faits."
+                ],
+                answer: "Le niveau de détail le plus bas des données enregistrées.",
+                explanation: "La diapo 17 explique la granularité comme 'le niveau de détails pour représenter les faits' (ex: journée entière vs heure du jour)."
+            },
+
+            // --- Niveau Avancé ---
+            {
+                level: "Avancé",
+                question: "Dans quel cas la solution SCD Type 3 (telle que décrite diapo 28, ajout de colonne) pourrait-elle être envisagée malgré sa popularité moindre ?",
+                options: [
+                    "Quand on a besoin de conserver un historique complet et illimité.",
+                    "Quand les changements de dimension sont extrêmement fréquents.",
+                    "Quand on ne veut suivre qu'un nombre très limité et prédéfini de changements historiques (ex: juste la valeur précédente).",
+                    "Quand la performance des requêtes est la priorité absolue."
+                ],
+                answer: "Quand on ne veut suivre qu'un nombre très limité et prédéfini de changements historiques (ex: juste la valeur précédente).",
+                explanation: "La diapo 28 mentionne que le Type 3 (ajout de colonne 'VilleAncien') est 'Utilisé lorsqu'on gère un nombre limité d'historique'."
+            },
+            {
+                level: "Avancé",
+                question: "Pourquoi le modèle en Flocon de Neige (Snowflake) peut-il être considéré comme potentiellement plus 'coûteux' en termes de manipulation que le modèle en Étoile (Star) ? (Diapo 32)",
+                options: [
+                    "Parce qu'il stocke plus de données redondantes.",
+                    "Parce qu'il nécessite plus de tables, entraînant des jointures plus complexes et nombreuses lors des requêtes.",
+                    "Parce que la normalisation est un processus long à mettre en place.",
+                    "Parce qu'il est moins bien supporté par les outils OLAP."
+                ],
+                answer: "Parce qu'il nécessite plus de tables, entraînant des jointures plus complexes et nombreuses lors des requêtes.",
+                explanation: "La diapo 32 mentionne '- Manipulation coûteuse' pour le Snowflake. La normalisation entraîne la création de plus de tables (ex: Ville, Pays séparés), ce qui requiert plus de jointures pour reconstituer l'information dimensionnelle complète lors d'une requête, impactant la performance."
+            },
+            {
+                level: "Avancé",
+                question: "Considérant la 'Contrainte Fait-Dimension' (diapo 34), qu'implique une relation où la participation du Fait est optionnelle (schéma de gauche, avec le cercle) ?",
+                options: [
+                    "Chaque fait doit obligatoirement correspondre à une dimension.",
+                    "Une dimension peut exister sans être liée à aucun fait.",
+                    "Un enregistrement de fait peut exister même s'il n'a pas d'enregistrement correspondant dans cette dimension particulière.",
+                    "La clé étrangère dans la table de faits peut être nulle."
+                ],
+                answer: "Un enregistrement de fait peut exister même s'il n'a pas d'enregistrement correspondant dans cette dimension particulière.",
+                explanation: "Le diagramme de gauche (Diapo 34, 'Incomplete dimensioning') montre une cardinalité (0,1) du côté de la dimension vue depuis le fait. Cela signifie qu'un fait peut avoir 0 ou 1 lien vers cette dimension, donc il peut exister sans correspondance dimensionnelle. La clé étrangère pourrait être NULL ou pointer vers une ligne 'Inconnu'."
+            },
+            {
+                level: "Avancé",
+                question: "Selon la diapo 33 sur la 'Summarizability', quel problème pourrait survenir si la hiérarchie d'une dimension n'est pas 'complète' (certains éléments de bas niveau ne s'agrègent pas à un élément de niveau supérieur) ?",
+                options: [
+                    "Les requêtes deviendront plus lentes.",
+                    "La somme des parties pourrait ne pas égaler le total calculé au niveau supérieur.",
+                    "Il sera impossible d'utiliser des mesures non-additives.",
+                    "La table de dimension deviendra trop volumineuse."
+                ],
+                answer: "La somme des parties pourrait ne pas égaler le total calculé au niveau supérieur.",
+                explanation: "La 'Complétude' (Diapo 33) assure que tous les membres de bas niveau appartiennent à un membre de niveau supérieur. Si ce n'est pas le cas, agréger les totaux des membres de bas niveau ne donnera pas le total du niveau supérieur car des éléments manqueront dans l'agrégation."
+             },
+             {
+                level: "Avancé",
+                question: "Pourquoi l'approche Hybride pour la conception d'un entrepôt de données est-elle considérée comme 'Couteuse' malgré ses avantages ? (Diapo 38)",
+                options: [
+                    "Parce qu'elle nécessite des outils logiciels très spécifiques et chers.",
+                    "Parce qu'elle implique de réaliser à la fois une analyse des sources (bottom-up) et une analyse des besoins (top-down), puis de les confronter, ce qui demande plus de temps et d'effort.",
+                    "Parce qu'elle mène toujours à des entrepôts de données beaucoup plus volumineux.",
+                    "Parce qu'elle rend la maintenance de l'entrepôt plus difficile."
+                ],
+                answer: "Parce qu'elle implique de réaliser à la fois une analyse des sources (bottom-up) et une analyse des besoins (top-down), puis de les confronter, ce qui demande plus de temps et d'effort.",
+                explanation: "La diapo 38 décrit l'approche Hybride comme une 'Confrontation' entre les résultats de l'approche ascendante et ceux de l'approche descendante. Mener ces deux analyses puis les réconcilier est intrinsèquement plus long et donc plus coûteux en ressources que de n'en faire qu'une seule."
+             }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = new Array(quizData.length).fill(null); // Store user answers
+
+        const quizContainer = document.getElementById('quiz-container');
+        const navigationContainer = document.getElementById('navigation-container');
+        const scoreContainer = document.getElementById('score-container');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const finalScoreSpan = document.getElementById('final-score');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const resultMessageSpan = document.getElementById('result-message');
+
+        function loadQuestion() {
+            quizContainer.innerHTML = '';
+            const currentQuizData = quizData[currentQuestionIndex];
+            const questionNumber = currentQuestionIndex + 1;
+
+            const levelDiv = document.createElement('div');
+            levelDiv.classList.add('level-indicator');
+            // Changed h2 to p for semantics, styled via CSS if needed
+            levelDiv.innerHTML = `<h2>Niveau ${currentQuizData.level} - Question ${questionNumber}/${quizData.length}</h2>`;
+            quizContainer.appendChild(levelDiv);
+
+            const questionContainer = document.createElement('div');
+            questionContainer.classList.add('question-container');
+
+            const questionText = document.createElement('div');
+            questionText.classList.add('question-text');
+            questionText.innerText = currentQuizData.question;
+            questionContainer.appendChild(questionText);
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.classList.add('options');
+
+            currentQuizData.options.forEach((option, index) => {
+                const optionId = `q${currentQuestionIndex}_option${index}`;
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.id = optionId;
+                radioInput.name = `question_${currentQuestionIndex}`;
+                radioInput.value = option;
+                if (userAnswers[currentQuestionIndex] === option) {
+                     radioInput.checked = true;
+                 }
+                 // Re-enable options when loading question unless an answer was already submitted
+                 radioInput.disabled = userAnswers[currentQuestionIndex] !== null;
+                 radioInput.onchange = () => handleAnswerSelection(option);
+
+                const label = document.createElement('label');
+                label.htmlFor = optionId;
+                label.innerText = option;
+
+                optionsDiv.appendChild(radioInput);
+                optionsDiv.appendChild(label);
+            });
+
+            questionContainer.appendChild(optionsDiv);
+
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.id = `feedback_${currentQuestionIndex}`;
+            feedbackDiv.classList.add('feedback', 'hidden');
+            questionContainer.appendChild(feedbackDiv);
+
+             if (userAnswers[currentQuestionIndex] !== null) {
+                 showFeedback(userAnswers[currentQuestionIndex]); // Show existing feedback
+             }
+
+            quizContainer.appendChild(questionContainer);
+            updateNavigationButtons();
+            navigationContainer.classList.remove('hidden');
+        }
+
+        function handleAnswerSelection(selectedOption) {
+             userAnswers[currentQuestionIndex] = selectedOption;
+             showFeedback(selectedOption);
+             // Disable options after selection
+             const options = document.querySelectorAll(`input[name="question_${currentQuestionIndex}"]`);
+             options.forEach(option => option.disabled = true);
+        }
+
+        // --- Modified showFeedback Function ---
+        function showFeedback(selectedOption) {
+            const currentQuizData = quizData[currentQuestionIndex];
+            const feedbackDiv = document.getElementById(`feedback_${currentQuestionIndex}`);
+            const correctAnswer = currentQuizData.answer;
+
+            feedbackDiv.classList.remove('hidden', 'correct', 'incorrect'); // Reset classes
+            feedbackDiv.innerHTML = ''; // Clear previous content
+
+            let statusText = '';
+            let correctAnswerText = '';
+            const explanationText = `<span class="feedback-explanation">${currentQuizData.explanation || ''}</span>`;
+
+             if (selectedOption === correctAnswer) {
+                feedbackDiv.classList.add('correct');
+                statusText = `<span class="feedback-status">Correct !</span>`;
+                feedbackDiv.innerHTML = statusText + explanationText; // No need to show correct answer if correct
+            } else {
+                feedbackDiv.classList.add('incorrect');
+                statusText = `<span class="feedback-status">Incorrect.</span>`;
+                correctAnswerText = `<span class="feedback-correct-answer">La bonne réponse était : "${correctAnswer}"</span>`;
+                feedbackDiv.innerHTML = statusText + correctAnswerText + explanationText;
+            }
+        }
+        // --- End Modified showFeedback ---
+
+
+         function calculateScore() {
+            score = 0;
+            userAnswers.forEach((answer, index) => {
+                if (answer !== null && answer === quizData[index].answer) {
+                    score++;
+                }
+            });
+        }
+
+        function updateNavigationButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            // Next button logic handled by showResults for the last question
+            nextBtn.disabled = false; // Generally enabled unless last question
+
+             if (currentQuestionIndex === quizData.length - 1) {
+                 nextBtn.classList.add('hidden'); // Hide Next on last question
+                 finishBtn.classList.remove('hidden'); // Show Finish
+             } else {
+                 nextBtn.classList.remove('hidden'); // Show Next
+                 finishBtn.classList.add('hidden'); // Hide Finish
+             }
+        }
+
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                 // If somehow called on the last question, act like finish
+                 showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function showResults() {
+            calculateScore();
+            quizContainer.classList.add('hidden');
+            navigationContainer.classList.add('hidden');
+            scoreContainer.classList.remove('hidden');
+
+            finalScoreSpan.innerText = score;
+            totalQuestionsSpan.innerText = quizData.length;
+
+             let message = "";
+             const percentage = (score / quizData.length) * 100;
+             if (percentage >= 80) {
+                 message = "Excellent travail ! Vous maîtrisez bien les concepts.";
+             } else if (percentage >= 60) {
+                 message = "Bon score ! Continuez à réviser pour renforcer vos connaissances.";
+             } else if (percentage >= 40) {
+                 message = "Résultat moyen. Concentrez-vous sur les points où vous avez fait des erreurs.";
+             } else {
+                 message = "Il reste du travail. Revoyez attentivement le cours et refaites le quiz.";
+             }
+             resultMessageSpan.innerText = message;
+        }
+
+         function restartQuiz() {
+             currentQuestionIndex = 0;
+             score = 0;
+             userAnswers.fill(null);
+             scoreContainer.classList.add('hidden');
+             quizContainer.classList.remove('hidden');
+             // navigationContainer should become visible when loadQuestion is called
+             loadQuestion(); // Load the first question
+         }
+
+
+        // Initial load
+        loadQuestion();
+
+    </script>
+
+</body>
+</html>
