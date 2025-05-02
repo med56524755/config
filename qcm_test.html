@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM Révision - Test Logiciel</title>
+    <style>
+        :root {
+            --font-size-base: 1rem; /* Equivalent to 16px by default */
+            --font-size-h1: 2rem;
+            --font-size-h2: 1.5rem;
+            --primary-color: #3498db;
+            --correct-color: #0c5a2c;
+            --incorrect-color: #a02417;
+            --light-bg: #f9f9f9;
+            --dark-text: #333;
+            --light-text: #ffffff;
+            --border-color: #ddd;
+            --explanation-bg: #eef;
+        }
+
+        html {
+             font-size: 100%; /* Base font size */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background-color: var(--light-text);
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            flex-grow: 1;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1.5em;
+            font-size: var(--font-size-h1);
+        }
+
+        .question-block {
+            margin-bottom: 2em;
+            padding-bottom: 1.5em;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 1em;
+            font-size: 1.1rem;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .options-list li {
+            margin-bottom: 0.8em;
+        }
+
+        .option-button {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #f1f1f1;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            text-align: left;
+            font-size: var(--font-size-base);
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+
+        .option-button:hover:not(:disabled) {
+            background-color: #e0e0e0;
+            border-color: #bbb;
+        }
+
+        .option-button:disabled {
+             cursor: not-allowed;
+             opacity: 0.7;
+        }
+
+        .option-button.correct {
+            background-color: var(--correct-color);
+            color: var(--light-text);
+            border-color: darken(var(--correct-color), 10%);
+            font-weight: bold;
+        }
+
+        .option-button.incorrect {
+            background-color: var(--incorrect-color);
+            color: var(--light-text);
+            border-color: darken(var(--incorrect-color), 10%);
+            font-weight: bold;
+        }
+
+        .explanation {
+            margin-top: 1em;
+            padding: 10px;
+            background-color: var(--explanation-bg);
+            border-left: 4px solid var(--primary-color);
+            font-size: 0.95rem;
+            border-radius: 0 4px 4px 0;
+            display: none; /* Hidden by default */
+        }
+         .explanation .source-ref {
+             font-style: italic;
+             font-size: 0.85rem;
+             color: #555;
+             margin-top: 5px;
+             display: block;
+         }
+
+        #submit-btn {
+            display: block;
+            width: 100%;
+            max-width: 250px;
+            margin: 2em auto 0;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--light-text);
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #submit-btn:hover {
+            background-color: darken(var(--primary-color), 10%);
+        }
+
+        #results {
+            text-align: center;
+            margin-top: 2em;
+            padding: 20px;
+            background-color: #e7f3ff;
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+             :root {
+                --font-size-base: 0.95rem;
+                --font-size-h1: 1.8rem;
+             }
+            .quiz-container {
+                width: 95%;
+                padding: 15px 20px;
+            }
+            h1 {
+                 margin-bottom: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --font-size-base: 0.9rem;
+                --font-size-h1: 1.5rem;
+            }
+            .quiz-container {
+                 padding: 10px 15px;
+            }
+            .option-button {
+                 padding: 10px 12px;
+            }
+             #submit-btn {
+                 padding: 12px;
+                 font-size: 1rem;
+             }
+             #results {
+                 font-size: 1.1rem;
+             }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1>QCM Révision - Test Logiciel</h1>
+
+        <div id="quiz">
+            <!-- Questions will be loaded here by JavaScript -->
+        </div>
+
+        <button id="submit-btn">Voir mon score final</button>
+
+        <div id="results" style="display:none;">
+            <!-- Final score will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+             // --- Chapter 1 Questions (~6) ---
+            {
+                question: "Quel est l'objectif principal du test logiciel selon la citation de Dijkstra ?",
+                options: [
+                    "Prouver l'absence totale d'erreurs.",
+                    "Prouver la présence d'erreurs, mais jamais leur absence.",
+                    "Garantir que le logiciel est 100% correct.",
+                    "Évaluer la performance du logiciel."
+                ],
+                correct: 1,
+                explanation: "La citation célèbre de Dijkstra (1974) est 'Testing can be use to prove the presence of bugs but never their absence', signifiant que le test peut montrer qu'il y a des erreurs, mais ne peut pas garantir qu'il n'y en a plus.",
+                source: "Chapitre 1, Limites du Test"
+            },
+            {
+                question: "Quelle est la différence fondamentale entre Vérification et Validation ?",
+                options: [
+                    "La vérification est manuelle, la validation est automatique.",
+                    "La vérification compare à la spécification ('fait-on bien le logiciel ?'), la validation compare au besoin utilisateur ('fait-on le bon logiciel ?').",
+                    "La validation se fait avant la vérification dans le cycle de vie.",
+                    "La vérification concerne les performances, la validation concerne les fonctionnalités."
+                ],
+                correct: 1,
+                explanation: "La vérification confirme la satisfaction des exigences spécifiques (conformité à la spécification), tandis que la validation confirme le respect des exigences pour une utilisation prévue (conformité au besoin utilisateur).",
+                source: "Chapitre 1, Vérification vs Validation (Point clé QCM)"
+            },
+            {
+                question: "Qu'est-ce qu'un Défaut (ou Faute) dans le contexte du test logiciel ?",
+                options: [
+                    "L'action humaine qui introduit une erreur dans le code.",
+                    "L'écart constaté entre le comportement attendu et observé à l'exécution.",
+                    "La représentation incorrecte dans le code qui peut causer une anomalie.",
+                    "Un test qui échoue."
+                ],
+                correct: 2,
+                explanation: "Un défaut (ou faute, bug) est la représentation incorrecte dans le code (l'implémentation) qui est la cause potentielle d'une anomalie visible à l'exécution.",
+                source: "Chapitre 1, Erreur, Défaut, Anomalie (Point clé QCM)"
+            },
+            {
+                question: "Lequel de ces principes de test recommande de tester les entrées invalides ?",
+                options: [
+                    "Principe 1 : Ne pas tester son propre code.",
+                    "Principe 3 : Définir les résultats attendus avant.",
+                    "Principe 5 : Tester avec des entrées invalides et incohérentes.",
+                    "Principe 2 : Tester pour trouver des erreurs."
+                ],
+                correct: 2,
+                explanation: "Le Principe 5 stipule que les jeux de tests doivent inclure des entrées invalides ou incohérentes, en plus des valides, afin de découvrir les anomalies et d'évaluer la robustesse.",
+                source: "Chapitre 1, Principes de Base du Test"
+            },
+             {
+                 question: "Quelle est la principale caractéristique du test 'Boîte Noire' (Test Fonctionnel) ?",
+                 options: [
+                     "Il nécessite une connaissance détaillée du code source.",
+                     "Il est basé uniquement sur la spécification, sans voir le code.",
+                     "Il ne peut être réalisé que manuellement.",
+                     "Il vise principalement à mesurer la performance."
+                 ],
+                 correct: 1,
+                 explanation: "Le test fonctionnel (Boîte Noire) est basé uniquement sur la spécification du logiciel. Les testeurs n'ont pas besoin de connaître la logique interne du code.",
+                 source: "Chapitre 1, Test Fonctionnel vs Structurel / Chapitre 2, Objectif"
+             },
+            {
+                question: "Qu'est-ce qu'un test de non-régression ?",
+                options: [
+                    "Un test initial des nouvelles fonctionnalités.",
+                    "Un test pour vérifier qu'une correction ou modification n'a pas introduit de nouveaux problèmes.",
+                    "Un test pour évaluer la performance après une modification.",
+                    "Un test réalisé uniquement par les développeurs."
+                ],
+                correct: 1,
+                explanation: "Le test de non-régression est effectué après une modification (correction ou évolution) pour s'assurer que cette modification n'a pas causé de problèmes (régressions) dans des parties du logiciel qui fonctionnaient auparavant.",
+                source: "Chapitre 1, Niveaux de Test"
+            },
+             // --- Chapter 2 Questions (~7) ---
+            {
+                question: "Sur quoi se base principalement le Test Fonctionnel pour générer les données de test ?",
+                options: [
+                    "Sur la structure interne du code.",
+                    "Sur l'expérience passée du testeur.",
+                    "Sur la spécification du logiciel.",
+                    "Sur l'analyse des performances."
+                ],
+                correct: 2,
+                explanation: "L'objectif du Test Fonctionnel est de générer des cas de tests en utilisant la spécification (non le code). Les données de test (DT) sont produites à partir de la spécification.",
+                source: "Chapitre 2, Objectif / Techniques issues de test fonctionnel"
+            },
+            {
+                question: "Quel est le principe de l'Analyse Partitionnelle (Classes d'Équivalence) ?",
+                options: [
+                    "Tester toutes les combinaisons d'entrées possibles.",
+                    "Diviser le domaine d'entrée en groupes où le comportement est supposé identique, et tester un représentant par groupe.",
+                    "Se concentrer uniquement sur les valeurs aux limites des domaines d'entrée.",
+                    "Utiliser une grammaire formelle pour générer les tests."
+                ],
+                correct: 1,
+                explanation: "L'analyse partitionnelle vise à optimiser les tests en partitionnant le domaine d'entrée en classes d'équivalence, où le logiciel devrait avoir le même comportement pour toutes les valeurs d'une classe. On teste ensuite un seul représentant par classe.",
+                source: "Chapitre 2, Analyse partitionnelle / Principe"
+            },
+            {
+                question: "L'analyse aux limites est une technique qui...",
+                options: [
+                    "Remplace complètement l'analyse partitionnelle.",
+                    "Teste principalement les valeurs médianes de chaque classe d'équivalence.",
+                    "Se concentre sur les valeurs situées aux frontières des classes d'équivalence.",
+                    "Ne s'applique qu'aux données numériques."
+                ],
+                correct: 2,
+                explanation: "L'analyse aux limites est complémentaire au partitionnement et se concentre sur les valeurs aux bornes (limites) des domaines (classes d'équivalence), car les erreurs s'y produisent souvent.",
+                source: "Chapitre 2, Analyse aux limites"
+            },
+            {
+                 question: "Pour un intervalle d'entrée valide [1, 95], quelles valeurs l'analyse aux limites suggérerait-elle typiquement de tester (en plus des valeurs invalides) ?",
+                 options: [
+                     "Uniquement 50.",
+                     "0, 1, 50, 95, 96.",
+                     "1 et 95.",
+                     "1, 2, 94, 95."
+                 ],
+                 correct: 2, // Simplification : on teste les bornes valides
+                 explanation: "L'analyse aux limites pour l'intervalle valide [1, 95] se concentre sur les bornes elles-mêmes, soit 1 (borne inférieure) et 95 (borne supérieure). Les valeurs juste avant/après (0, 96) sont aussi testées mais pour la robustesse (classes invalides).",
+                 source: "Chapitre 2, Analyse aux limites / Exemple Département"
+             },
+            {
+                question: "Quelle technique de test fonctionnel est la plus appropriée pour valider des données d'entrée définies par une structure formelle complexe (ex: format de fichier XML) ?",
+                options: [
+                    "Analyse aux limites.",
+                    "Analyse partitionnelle.",
+                    "Test aléatoire.",
+                    "Analyse basée sur une grammaire (BNF)."
+                ],
+                correct: 3,
+                explanation: "L'analyse basée sur une grammaire (comme BNF) est particulièrement adaptée pour tester des entrées dont la structure valide est définie par des règles formelles, comme un langage ou un format de fichier.",
+                source: "Chapitre 2, Grammaire BNF / Critère de test"
+            },
+             {
+                 question: "L'axiome du programmeur compétent suppose que :",
+                 options: [
+                     "Le programmeur ne fait jamais d'erreur.",
+                     "Le programmeur rate complètement la spécification.",
+                     "Le programmeur implémente une grande partie de la spécification correctement mais peut faire des erreurs.",
+                     "Le programmeur est aussi le meilleur testeur."
+                 ],
+                 correct: 2,
+                 explanation: "L'hypothèse plausible dite 'axiome du programmeur compétent' est que le programmeur ne rate pas totalement la spécification et en implémente une grande partie, mais des erreurs peuvent survenir.",
+                 source: "Chapitre 2, Axiome du programmeur compétent"
+             },
+             {
+                question: "Quelles sont les deux propriétés souhaitées pour les classes d'équivalence lors d'une analyse partitionnelle ?",
+                options: [
+                    "Elles doivent être infinies et se chevaucher.",
+                    "Elles doivent couvrir tout le domaine et être très petites.",
+                    "Elles doivent couvrir tout le domaine et être disjointes (ne pas se chevaucher).",
+                    "Elles doivent inclure uniquement les cas invalides."
+                ],
+                correct: 2,
+                explanation: "Les propriétés désirées d'une partition en classes d'équivalence sont : P1) La réunion de toutes les classes couvre l'ensemble du domaine d'entrée (∪Ci = E). P2) Les classes sont deux à deux disjointes (Ci ∩ Cj = ∅).",
+                source: "Chapitre 2, Analyse partitionnelle (Propriétés p.11)"
+            },
+             // --- Chapter 3 Questions (~7) ---
+            {
+                question: "Qu'est-ce qu'un Graphe de Flot de Contrôle (GFC / CFG) représente ?",
+                options: [
+                    "La structure des données du programme.",
+                    "Toutes les exécutions possibles (chemins de contrôle) d'un programme.",
+                    "Les relations entre les classes dans un programme orienté objet.",
+                    "Les dépendances entre les modules logiciels."
+                ],
+                correct: 1,
+                explanation: "Un GFC est une représentation abstraite et simplifiée de la structure du programme qui décrit le flot de contrôle. Il permet de visualiser toutes les exécutions (chemins de contrôle) possibles.",
+                source: "Chapitre 3, Graphe de Flot de Contrôle"
+            },
+            {
+                question: "Dans un GFC, que représente un arc ?",
+                options: [
+                    "Un bloc d'instructions exécutées séquentiellement.",
+                    "Une condition à évaluer.",
+                    "Le début ou la fin du programme.",
+                    "Un transfert de contrôle (possibilité d'aller d'un nœud à un autre)."
+                ],
+                correct: 3,
+                explanation: "Chaque nœud représente un segment de code séquentiel, tandis que chaque arc dénote un lien ou transfert de contrôle, indiquant la possibilité d'aller d'un nœud à l'autre.",
+                source: "Chapitre 3, Graphe de Flot de Contrôle"
+            },
+            {
+                question: "Quel niveau de couverture structurelle garantit que chaque branchement (vrai/faux après une condition) a été emprunté au moins une fois ?",
+                options: [
+                    "Couverture de tous les nœuds (Instructions).",
+                    "Couverture de tous les chemins.",
+                    "Couverture de tous les arcs (Décisions/Branches).",
+                    "Couverture des conditions."
+                ],
+                correct: 2,
+                explanation: "La couverture de tous les arcs (Niveau 2) vise à s'assurer que chaque arc du GFC, correspondant à un branchement possible après une décision, est emprunté au moins une fois.",
+                source: "Chapitre 3, Couverture du CFG"
+            },
+            {
+                 question: "La complexité cyclomatique V(G) = E - N + 2P mesure principalement :",
+                 options: [
+                     "La taille du code en lignes.",
+                     "La complexité logique liée aux chemins et décisions dans le code.",
+                     "Le temps d'exécution moyen du programme.",
+                     "Le nombre de bugs trouvés dans le code."
+                 ],
+                 correct: 1,
+                 explanation: "La complexité cyclomatique est une mesure de la complexité logique d'un programme, basée sur le nombre de nœuds, d'arcs et de composantes connexes de son GFC. Elle est liée au nombre de chemins indépendants et de décisions.",
+                 source: "Chapitre 3, GFC / Complexité Cyclomatique"
+             },
+             {
+                 question: "Que peut indiquer la présence de chemins non exécutables dans un GFC ?",
+                 options: [
+                     "Que le programme est parfaitement optimisé.",
+                     "Uniquement que les tests sont insuffisants.",
+                     "Une erreur de conception, une incohérence logique ou du code mort.",
+                     "Que la complexité cyclomatique est faible."
+                 ],
+                 correct: 2,
+                 explanation: "Les chemins non exécutables peuvent indiquer plusieurs problèmes potentiels : une erreur de conception, une incohérence logique, des cas non traités, ou du code devenu inutile (code mort).",
+                 source: "Chapitre 3, Chemins Non Exécutables (Complément)"
+             },
+            {
+                 question: "Dans JUnit, quelle annotation marque une méthode qui sera exécutée avant chaque méthode de test ?",
+                 options: [
+                     "@Test",
+                     "@Before",
+                     "@After",
+                     "@Ignore"
+                 ],
+                 correct: 1,
+                 explanation: "L'annotation @Before est utilisée pour marquer une méthode (souvent nommée setUp()) qui doit être exécutée avant l'exécution de chaque méthode annotée avec @Test dans la classe de test.",
+                 source: "Chapitre 3, Tests unitaires avec JUnit / Méthodes d'initialisation"
+             },
+             {
+                 question: "Selon les QCM fournis, quelle est la principale différence entre tests de régression et tests de progression ?",
+                 options: [
+                     "Les tests de progression sont faits avant les tests de régression.",
+                     "Les tests de régression vérifient l'impact des modifications sur l'existant, les tests de progression vérifient les nouvelles fonctionnalités.",
+                     "Les tests de régression sont manuels, ceux de progression sont automatisés.",
+                     "Il n'y a pas de différence significative."
+                 ],
+                 correct: 1, // Basé sur Q3 du PDF QCM
+                 explanation: "La principale différence est que les tests de régression vérifient l'impact des modifications sur les fonctionnalités existantes, tandis que les tests de progression vérifient les nouvelles fonctionnalités ajoutées.",
+                 source: "Complément Chap 3/QCM, Question 3"
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz');
+        const resultsContainer = document.getElementById('results');
+        const submitButton = document.getElementById('submit-btn');
+        let score = 0;
+        let questionsAnswered = 0;
+
+        function buildQuiz() {
+            quizData.forEach((currentQuestion, questionIndex) => {
+                // Create question block
+                const questionBlock = document.createElement('div');
+                questionBlock.classList.add('question-block');
+                questionBlock.setAttribute('id', `question-${questionIndex}`);
+
+                // Add question text
+                const questionText = document.createElement('div');
+                questionText.classList.add('question-text');
+                questionText.textContent = `${questionIndex + 1}. ${currentQuestion.question}`;
+                questionBlock.appendChild(questionText);
+
+                // Add options
+                const optionsList = document.createElement('ul');
+                optionsList.classList.add('options-list');
+
+                currentQuestion.options.forEach((option, optionIndex) => {
+                    const listItem = document.createElement('li');
+                    const optionButton = document.createElement('button');
+                    optionButton.classList.add('option-button');
+                    optionButton.textContent = option;
+                    optionButton.dataset.questionIndex = questionIndex;
+                    optionButton.dataset.optionIndex = optionIndex;
+
+                    optionButton.addEventListener('click', handleOptionClick);
+
+                    listItem.appendChild(optionButton);
+                    optionsList.appendChild(listItem);
+                });
+                questionBlock.appendChild(optionsList);
+
+                // Add explanation container (initially hidden)
+                const explanationDiv = document.createElement('div');
+                explanationDiv.classList.add('explanation');
+                explanationDiv.setAttribute('id', `explanation-${questionIndex}`);
+                explanationDiv.innerHTML = `
+                    <strong>Explication :</strong> ${currentQuestion.explanation}
+                    <span class="source-ref">Source : ${currentQuestion.source}</span>
+                `;
+                questionBlock.appendChild(explanationDiv);
+
+
+                quizContainer.appendChild(questionBlock);
+            });
+        }
+
+        function handleOptionClick(event) {
+            const selectedButton = event.target;
+            const questionIndex = parseInt(selectedButton.dataset.questionIndex);
+            const selectedOptionIndex = parseInt(selectedButton.dataset.optionIndex);
+            const questionData = quizData[questionIndex];
+            const correctOptionIndex = questionData.correct;
+            const questionBlock = document.getElementById(`question-${questionIndex}`);
+            const optionButtons = questionBlock.querySelectorAll('.option-button');
+            const explanationDiv = document.getElementById(`explanation-${questionIndex}`);
+
+             // Prevent re-answering
+             if (selectedButton.disabled) {
+                 return;
+             }
+
+            questionsAnswered++; // Increment answered count
+
+            // Disable all options for this question
+            optionButtons.forEach(button => {
+                button.disabled = true;
+            });
+
+            // Provide feedback
+            if (selectedOptionIndex === correctOptionIndex) {
+                selectedButton.classList.add('correct');
+                score++;
+            } else {
+                selectedButton.classList.add('incorrect');
+                // Highlight the correct answer as well
+                 optionButtons[correctOptionIndex].classList.add('correct');
+            }
+
+            // Show explanation
+            explanationDiv.style.display = 'block';
+
+            // Optional: Scroll to explanation or next question smoothly
+            // explanationDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+
+        function showResults() {
+            // Hide quiz and submit button
+            quizContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+
+            // Display final score
+            resultsContainer.innerHTML = `Votre score final est : ${score} / ${quizData.length}`;
+            resultsContainer.style.display = 'block';
+        }
+
+        // Build the quiz on page load
+        buildQuiz();
+
+        // Add event listener for the submit button
+        submitButton.addEventListener('click', showResults);
+
+    </script>
+
+</body>
+</html>
