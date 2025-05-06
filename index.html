@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negotiation Script Builder - Vibrant & Responsive</title>
+    <style>
+        /* --- Global Styles & NEW Vibrant Color Palette --- */
+        :root {
+            /* Vibrant Palette */
+            --primary-color: #0077B6; /* Vivid Cerulean Blue */
+            --primary-darker: #005A8D;
+            --secondary-color: #00B4D8; /* Bright Sky Blue/Teal */
+            --accent-color: #F77F00; /* Energetic Orange */
+            --accent-hover-color: #D96C00;
+            --neutral-bg: #F8F9FA; /* Very light gray - almost white */
+            --panel-bg: #FFFFFF;
+            --text-color: #212529; /* Darker, high-contrast text */
+            --text-light: #495057;
+            --border-color: #DEE2E6;
+
+            /* Script Line Specific Colors */
+            --customer-line-bg: #CAF0F8; /* Light Cyan/Blue, derived from secondary */
+            --customer-line-border: var(--secondary-color);
+            --seller-line-bg: #FFF1E6;   /* Light Peach/Orange, derived from accent */
+            --seller-line-border: var(--accent-color);
+            --closing-line-bg: #FFFBEB;  /* Light Yellow for closing */
+            --closing-line-border: #FFD700; /* Gold */
+
+            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --transition-speed: 0.25s;
+            --border-radius: 6px;
+            --box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--neutral-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px; /* Reduced padding for smaller screens */
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 16px; /* Base font size */
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 0.75em;
+        }
+        h1 {
+            font-size: 1.8em; /* Responsive font size */
+            margin-top: 0.5em;
+            margin-bottom: 1em;
+        }
+        h2 {
+            font-size: 1.4em;
+        }
+        h3 {
+            font-size: 1.1em;
+            color: var(--primary-darker);
+        }
+
+        .container {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 1400px;
+            flex-direction: column; /* Mobile first - stack by default */
+        }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: var(--box-shadow);
+            flex: 1;
+            min-width: 0; /* Allow shrinking below default min-width */
+            display: flex;
+            flex-direction: column;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .panel-header {
+            font-size: 1.2em;
+            font-weight: 600; /* Slightly bolder */
+            color: var(--primary-darker);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .choices-container {
+            max-height: 350px; /* Adjusted for mobile */
+            overflow-y: auto;
+            padding-right: 8px; /* Space for scrollbar */
+        }
+         /* Scrollbar styling for a more modern look (Webkit) */
+        .choices-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .choices-container::-webkit-scrollbar-track {
+            background: var(--neutral-bg);
+            border-radius: var(--border-radius);
+        }
+        .choices-container::-webkit-scrollbar-thumb {
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius);
+            border: 2px solid var(--neutral-bg);
+        }
+        .choices-container::-webkit-scrollbar-thumb:hover {
+            background-color: var(--primary-color);
+        }
+
+
+        /* --- "Brick" Styling --- */
+        .choice-brick {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px 15px; /* Increased padding for better tap targets */
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color var(--transition-speed), color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed), border-color var(--transition-speed);
+            font-size: 0.95em; /* Relative font size */
+            line-height: 1.4;
+            text-align: left;
+            width: 100%; /* Ensure full width for consistent tap area */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+
+        .choice-brick:hover, .choice-brick.selected-brick-style {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-hover-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.12);
+        }
+
+        .choice-brick.category-brick {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        .choice-brick.category-brick:hover, .choice-brick.category-brick.selected-category-brick-style {
+            background-color: var(--primary-darker);
+            border-color: var(--primary-darker);
+        }
+        .choice-brick.selected-category-brick-style { /* Style for actively selected category */
+             box-shadow: 0 0 0 3px var(--secondary-color);
+        }
+
+
+        .choice-brick.customer-phrase-brick {
+            border-left: 5px solid var(--customer-line-border);
+        }
+        .choice-brick.customer-phrase-brick:hover, .choice-brick.customer-phrase-brick.selected-brick-style {
+            background-color: var(--customer-line-bg);
+            color: var(--text-color);
+            border-color: var(--customer-line-border);
+        }
+
+        .choice-brick.seller-response-brick {
+            border-left: 5px solid var(--seller-line-border);
+        }
+         .choice-brick.seller-response-brick:hover, .choice-brick.seller-response-brick.selected-brick-style {
+            background-color: var(--seller-line-bg);
+            color: var(--text-color);
+            border-color: var(--seller-line-border);
+        }
+
+        .choice-brick.closing-phrase-brick {
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .choice-brick.disabled {
+            background-color: #E9ECEF; /* Lighter disabled color */
+            color: #6C757D; /* Muted text for disabled */
+            cursor: not-allowed;
+            opacity: 0.8;
+            border-left-color: #ADB5BD;
+        }
+        .choice-brick.disabled:hover {
+            background-color: #E9ECEF;
+            transform: none;
+            box-shadow: none;
+            color: #6C757D;
+            border-color: var(--border-color);
+        }
+
+
+        /* --- Script Display Styling --- */
+        #script-display-panel {
+            /* Flex basis will be handled by media queries */
+        }
+
+        .script-entry {
+            margin-bottom: 12px;
+            padding: 12px; /* Good padding for readability */
+            border-radius: var(--border-radius);
+            position: relative;
+            animation: fadeIn var(--transition-speed) ease-out;
+            font-size: 0.98em;
+            line-height: 1.5;
+            word-wrap: break-word; /* Ensure long words break */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .script-entry .speaker {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .script-entry.customer {
+            background-color: var(--customer-line-bg);
+            border-left: 5px solid var(--customer-line-border);
+        }
+        .script-entry.customer .speaker {
+            color: var(--customer-line-border);
+        }
+
+        .script-entry.seller {
+            background-color: var(--seller-line-bg);
+            border-left: 5px solid var(--seller-line-border);
+        }
+        .script-entry.seller .speaker {
+            color: var(--seller-line-border);
+        }
+        
+        .script-entry.closing {
+            background-color: var(--closing-line-bg);
+            border-left: 5px solid var(--closing-line-border);
+        }
+        .script-entry.closing .speaker {
+            color: var(--closing-line-border);
+        }
+
+        .remove-entry-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: #DC3545; /* Bootstrap danger red */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px; /* Larger tap target */
+            height: 24px;
+            font-size: 14px;
+            line-height: 24px;
+            text-align: center;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity var(--transition-speed), background-color var(--transition-speed);
+            z-index: 10;
+        }
+        .remove-entry-btn:hover {
+             background-color: #C82333; /* Darker red */
+        }
+
+        .script-entry:hover .remove-entry-btn {
+            opacity: 1;
+        }
+
+        /* --- Close Deal Section --- */
+        .close-deal-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #close-deal-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 25px; /* Good padding for tap target */
+            font-size: 1.05em; /* Slightly larger */
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+            width: 100%; /* Full width on mobile */
+            max-width: 300px; /* Max width on larger screens */
+            box-sizing: border-box;
+        }
+
+        #close-deal-btn:hover:not(.disabled) {
+            background-color: var(--accent-hover-color);
+            transform: translateY(-1px);
+        }
+        
+        #close-deal-btn.disabled {
+            background-color: #ADB5BD; /* Muted disabled color */
+            color: #F8F9FA;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* --- Utility & Helper --- */
+        .hidden {
+            display: none !important;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            border: none;
+            transition: opacity var(--transition-speed) ease, max-height var(--transition-speed) ease, margin var(--transition-speed) ease, padding var(--transition-speed) ease;
+        }
+        
+        .placeholder-text {
+            color: var(--text-light);
+            font-style: italic;
+            text-align: center;
+            padding: 20px 10px;
+            font-size: 0.9em;
+        }
+        
+        .app-description {
+            text-align:center; 
+            max-width: 700px; 
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom:25px; 
+            font-size: 0.95em;
+            color: var(--text-light);
+        }
+
+        /* --- Responsive Adjustments --- */
+        /* Styles for screens 320px and up are covered by the mobile-first approach */
+
+        /* Medium screens (tablets, small desktops) - approx 768px and up */
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+                font-size: 16px; /* Reset base font size for larger screens if needed */
+            }
+            h1 {
+                font-size: 2.2em;
+            }
+             .app-description {
+                font-size: 1em;
+            }
+            .container {
+                flex-direction: row; /* Side-by-side layout for panels */
+                flex-wrap: nowrap; /* Prevent wrapping for the main 3 panels */
+                gap: 20px;
+            }
+            .panel {
+                padding: 20px;
+            }
+            /* Define flex basis for panels on larger screens */
+            #objection-category-panel { flex: 0 0 25%; } /* Category panel takes ~25% */
+            #choices-panel { flex: 0 0 35%; } /* Choices panel takes ~35% */
+            #script-display-panel { flex: 1 1 40%; } /* Script panel takes remaining space, can grow */
+
+            .choices-container {
+                max-height: 400px; /* More height on larger screens */
+            }
+             #close-deal-btn {
+                width: auto; /* Allow button to size to content */
+            }
+        }
+
+        /* Large screens (desktops) - approx 992px and up */
+        @media (min-width: 992px) {
+            h1 { font-size: 2.5em; }
+        }
+        
+        /* Extra large screens - approx 1200px and up */
+        @media (min-width: 1200px) {
+            /* #objection-category-panel { flex: 0 0 20%; }
+            #choices-panel { flex: 0 0 30%; }
+            #script-display-panel { flex: 1 1 50%; } */
+            /* Adjust flex basis if more fine-tuning is needed for very large screens */
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Interactive Negotiation Script Builder</h1>
+    <p class="app-description">
+        You are the <strong>Software Seller</strong>. Build your negotiation by selecting customer objections and then choosing how to handle them. All dialogue is in Business English.
+    </p>
+
+    <div class="container">
+        <!-- Panel 1: Objection Categories -->
+        <div class="panel" id="objection-category-panel">
+            <div class="panel-header">Step 1: Select Objection Category</div>
+            <div class="choices-container" id="objection-categories-list">
+                <!-- Categories will be populated by JS -->
+            </div>
+        </div>
+
+        <!-- Panel 2: Objection Phrasing & Seller Responses -->
+        <div class="panel" id="choices-panel">
+            <div class="panel-header" id="choices-panel-header">Step 2: Choices</div>
+            <div id="customer-phrases-section">
+                <h3 style="font-size:1.1em; margin-top:0;">Customer's Objection:</h3>
+                <div class="choices-container" id="customer-phrases-list">
+                     <p class="placeholder-text">Select an objection category first.</p>
+                </div>
+            </div>
+            <hr style="margin: 20px 0; border-color: var(--border-color); border-top-width:1px; border-bottom-width:0;">
+            <div id="seller-responses-section">
+                <h3 style="font-size:1.1em;">Your Handling Response:</h3>
+                <div class="choices-container" id="seller-responses-list">
+                    <p class="placeholder-text">Select the customer's phrasing first.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 3: Negotiation Script Display -->
+        <div class="panel" id="script-display-panel">
+            <div class="panel-header">Negotiation Script (Real-time)</div>
+            <div id="script-output">
+                <p class="placeholder-text">Your negotiation script will appear here...</p>
+                <!-- Script entries will be populated by JS -->
+            </div>
+            <div class="close-deal-section">
+                <button id="close-deal-btn" class="disabled">Attempt to Close the Deal</button>
+                <div id="closing-phrases-list" class="choices-container hidden" style="margin-top:15px;">
+                    <!-- Closing phrases will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const negotiationData = {
+            "Budget Objection": {
+                customerPhrases: [
+                    { id: "b1", text: "The Price of the Product is too high." },
+                    { id: "b2", text: "We don't have the budget for it right now." },
+                    { id: "b3", text: "It's too expensive for us at this moment." },
+                    { id: "b4", text: "I wasn't planning to spend anything on this." },
+                    { id: "b5", text: "We are cutting back on expenses (budget)." }
+                ],
+                sellerResponses: [
+                    { id: "bs1", text: "I understand budget is key. Let's explore how this investment generates long-term value and ROI." },
+                    { id: "bs2", text: "I hear you. If budget wasn't a concern, would the solution be of interest? We can discuss flexible options." },
+                    { id: "bs3", text: "To address the budget, we could look at smaller packages or a phased payment plan. Would that help?" },
+                    { id: "bs4", text: "Fair enough. Could I briefly show you the value this brings? Then you can decide if it's a worthwhile investment." }
+                ]
+            },
+            "Lack of Need Objection": {
+                customerPhrases: [
+                    { id: "n1", text: "I don't see a clear need for the Product at the moment." },
+                    { id: "n2", text: "We are satisfied with our current internal solution." },
+                    { id: "n3", text: "It's not a priority for us right now." },
+                    { id: "n4", text: "I'm not sure how this would help us improve." }
+                ],
+                sellerResponses: [
+                    { id: "ns1", text: "Glad to hear your current solution works well. What do you like most? Perhaps we can complement or enhance it." },
+                    { id: "ns2", text: "I understand. May I share a brief summary of benefits for similar businesses, for future consideration?" },
+                    { id: "ns3", text: "That's a fair point. Could I show how others have benefited? A quick look might offer new perspectives." },
+                    { id: "ns4", text: "Of course. If a flexible, minimally disruptive startup plan were available, would exploring it be an option?" }
+                ]
+            },
+            "Lack of Trust Objection": {
+                customerPhrases: [
+                    { id: "t1", text: "I've never heard of your company before." },
+                    { id: "t2", text: "We have heard mixed reviews about products like yours." },
+                    { id: "t3", text: "It seems too good to be true. How do I know you'll deliver on your promise?" },
+                    { id: "t4", text: "I'm concerned about reliability and the level of support after the sale." }
+                ],
+                sellerResponses: [
+                    { id: "ts1", text: "That's understandable. I can provide verified reviews and client testimonials to build confidence." },
+                    { id: "ts2", text: "I appreciate your caution. We offer a trial or demo so you can assess our solution and support firsthand." },
+                    { id: "ts3", text: "We stand by our service with full support and a satisfaction policy. Your peace of mind is important." },
+                    { id: "ts4", text: "To address that, I'd be happy to offer a demo and connect you with references for their direct feedback." }
+                ]
+            },
+            "Value & Comparison Objection": {
+                customerPhrases: [
+                    { id: "vc1", text: "I don't see how this offers enough additional value compared to what we already use." },
+                    { id: "vc2", text: "Your product seems more expensive than [Competitor X] / Competitor Y offers more features for a similar price." },
+                    { id: "vc3", text: "I'm not sure the benefits are worth the price you're asking." },
+                    { id: "vc4", text: "I don't believe this solution will significantly improve our current process." }
+                ],
+                sellerResponses: [
+                    { id: "vcs1", text: "I understand. Let me highlight key differentiators that enhance your process and deliver superior value." },
+                    { id: "vcs2", text: "Many initially felt that way, but discovered our long-term value and ROI. Let me share some experiences." },
+                    { id: "vcs3", text: "Let's focus on how our solution can streamline your workflow and achieve specific benefits like [cost savings/efficiency]." },
+                    { id_content: "vcs4", text: "That's a valid concern. We have case studies showing significant improvements for similar businesses and offer a trial." }
+                ]
+            }
+        };
+
+        const closingPhrases = [
+            { id: "c1", text: "Based on our discussion and how we've addressed your concerns, are you comfortable moving forward with the proposal?" },
+            { id: "c2", text: "It sounds like our solution aligns well with your needs for [Key Need 1] and [Key Need 2]. What would be the next steps from your side to proceed?" },
+            { id: "c3", text: "Shall we outline the terms and get the paperwork started?" },
+            { id: "c4", text: "With these points clarified, are there any further obstacles to us partnering on this?" }
+        ];
+
+        let scriptEntries = [];
+        let currentCategory = null;
+        let currentCustomerPhrase = null;
+        let currentSelectedCategoryBrick = null;
+        let currentSelectedCustomerBrick = null;
+        let entryIdCounter = 0;
+
+        const objectionCategoriesList = document.getElementById('objection-categories-list');
+        const customerPhrasesList = document.getElementById('customer-phrases-list');
+        const sellerResponsesList = document.getElementById('seller-responses-list');
+        const scriptOutput = document.getElementById('script-output');
+        const closeDealBtn = document.getElementById('close-deal-btn');
+        const closingPhrasesList = document.getElementById('closing-phrases-list');
+        const choicesPanelHeader = document.getElementById('choices-panel-header');
+
+        function initApp() {
+            displayObjectionCategories();
+            updateCloseDealButtonState();
+            closeDealBtn.addEventListener('click', handleCloseDealClick);
+            // Initial placeholder for script if empty
+            if (scriptEntries.length === 0) {
+                scriptOutput.innerHTML = '<p class="placeholder-text">Your negotiation script will appear here...</p>';
+            }
+        }
+
+        function displayObjectionCategories() {
+            objectionCategoriesList.innerHTML = ''; // Clear existing
+            Object.keys(negotiationData).forEach(category => {
+                const brick = createBrick(category, 'category-brick', (event) => handleCategorySelect(category, event.currentTarget));
+                objectionCategoriesList.appendChild(brick);
+            });
+        }
+
+        function handleCategorySelect(categoryName, selectedBrick) {
+            currentCategory = categoryName;
+            currentCustomerPhrase = null; 
+            
+            if (currentSelectedCategoryBrick) {
+                currentSelectedCategoryBrick.classList.remove('selected-category-brick-style');
+            }
+            selectedBrick.classList.add('selected-category-brick-style');
+            currentSelectedCategoryBrick = selectedBrick;
+
+            if(currentSelectedCustomerBrick){
+                currentSelectedCustomerBrick.classList.remove('selected-brick-style');
+                currentSelectedCustomerBrick = null;
+            }
+
+            choicesPanelHeader.textContent = `Choices for "${categoryName}"`;
+            displayCustomerPhrases(categoryName);
+            sellerResponsesList.innerHTML = '<p class="placeholder-text">Select the customer\'s phrasing first.</p>'; 
+        }
+
+        function displayCustomerPhrases(categoryName) {
+            customerPhrasesList.innerHTML = ''; 
+            const phrases = negotiationData[categoryName].customerPhrases;
+            phrases.forEach(phrase => {
+                const brick = createBrick(phrase.text, 'customer-phrase-brick', (event) => handleCustomerPhraseSelect(phrase.text, categoryName, event.currentTarget));
+                customerPhrasesList.appendChild(brick);
+            });
+        }
+
+        function handleCustomerPhraseSelect(phraseText, categoryName, selectedBrick) {
+            currentCustomerPhrase = phraseText;
+
+            if (currentSelectedCustomerBrick) {
+                currentSelectedCustomerBrick.classList.remove('selected-brick-style');
+            }
+            selectedBrick.classList.add('selected-brick-style');
+            currentSelectedCustomerBrick = selectedBrick;
+            
+            displaySellerResponses(categoryName);
+        }
+
+        function displaySellerResponses(categoryName) {
+            sellerResponsesList.innerHTML = ''; 
+            const responses = negotiationData[categoryName].sellerResponses;
+            responses.forEach(response => {
+                const brick = createBrick(response.text, 'seller-response-brick', () => handleSellerResponseSelect(response.text));
+                sellerResponsesList.appendChild(brick);
+            });
+        }
+
+        function handleSellerResponseSelect(responseText) {
+            if (!currentCustomerPhrase) {
+                // This should ideally not happen if UI flow is correct, but good to have a check.
+                alert("Error: Customer objection phrase not selected. Please select one first.");
+                return;
+            }
+
+            const entryId = `turn-${entryIdCounter++}`;
+            scriptEntries.push({
+                id: entryId,
+                customer: currentCustomerPhrase,
+                seller: responseText
+            });
+
+            renderScript();
+            resetSelectionFlowAfterAdding();
+            updateCloseDealButtonState();
+        }
+
+        function renderScript() {
+            const hasRegularEntries = scriptEntries.some(entry => entry.type !== 'closing');
+            const hasClosingEntry = scriptEntries.some(entry => entry.type === 'closing');
+
+            if (scriptEntries.length === 0) {
+                 scriptOutput.innerHTML = '<p class="placeholder-text">Your negotiation script will appear here...</p>';
+                 return;
+            }
+            
+            scriptOutput.innerHTML = ''; 
+
+            scriptEntries.forEach(entry => {
+                let entryDiv;
+                if(entry.type === 'closing') {
+                    entryDiv = document.createElement('div');
+                    entryDiv.classList.add('script-entry', 'closing');
+                    entryDiv.innerHTML = `<span class="speaker">Seller (Closing):</span>${entry.text}`;
+                    // No remove button for closing statement by default
+                } else {
+                    const customerDiv = document.createElement('div');
+                    customerDiv.classList.add('script-entry', 'customer');
+                    customerDiv.innerHTML = `<span class="speaker">Customer:</span>${entry.customer}`;
+                    scriptOutput.appendChild(customerDiv); // Add customer part
+
+                    entryDiv = document.createElement('div'); // This will be the seller part
+                    entryDiv.classList.add('script-entry', 'seller');
+                    entryDiv.innerHTML = `<span class="speaker">Seller:</span>${entry.seller}
+                                           <button class="remove-entry-btn" data-id="${entry.id}" title="Remove this exchange">×</button>`;
+                }
+                scriptOutput.appendChild(entryDiv);
+            });
+
+            document.querySelectorAll('.remove-entry-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => removeScriptEntry(e.target.dataset.id));
+            });
+        }
+        
+        function removeScriptEntry(entryId) {
+            scriptEntries = scriptEntries.filter(entry => entry.id !== entryId);
+            renderScript(); // This will re-evaluate placeholders if needed
+            updateCloseDealButtonState();
+        }
+
+        function resetSelectionFlowAfterAdding() {
+            // currentCategory remains selected to allow multiple responses for the same category
+            // but currentCustomerPhrase should be reset to force re-selection or choosing a new one.
+            currentCustomerPhrase = null;
+
+            // Clear selection style from customer phrase brick
+            if (currentSelectedCustomerBrick) {
+                currentSelectedCustomerBrick.classList.remove('selected-brick-style');
+                currentSelectedCustomerBrick = null;
+            }
+            // Reset seller responses list
+            sellerResponsesList.innerHTML = '<p class="placeholder-text">Select the customer\'s phrasing first or choose another objection category.</p>';
+        }
+
+
+        function createBrick(text, className, onClickAction) {
+            const button = document.createElement('button'); // Use button for better accessibility
+            button.classList.add('choice-brick', className);
+            button.type = 'button'; // Explicitly set type for buttons
+            button.textContent = text;
+            button.addEventListener('click', onClickAction);
+            return button;
+        }
+
+        function updateCloseDealButtonState() {
+            const hasObjectionEntries = scriptEntries.some(entry => entry.type !== 'closing');
+            if (hasObjectionEntries) {
+                closeDealBtn.classList.remove('disabled');
+                closeDealBtn.disabled = false;
+            } else {
+                closeDealBtn.classList.add('disabled');
+                closeDealBtn.disabled = true;
+                closingPhrasesList.classList.add('hidden'); 
+            }
+        }
+        
+        function handleCloseDealClick() {
+            if (closeDealBtn.disabled) return;
+            
+            closingPhrasesList.innerHTML = ''; 
+            closingPhrases.forEach(phrase => {
+                const brick = createBrick(phrase.text, 'closing-phrase-brick', () => handleClosingPhraseSelect(phrase.text));
+                closingPhrasesList.appendChild(brick);
+            });
+            closingPhrasesList.classList.remove('hidden');
+            // Scroll into view if it's off screen on mobile
+            closingPhrasesList.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function handleClosingPhraseSelect(phraseText) {
+            const entryId = `closing-${entryIdCounter++}`;
+            scriptEntries.push({
+                id: entryId,
+                type: 'closing', 
+                text: phraseText
+            });
+            renderScript(); 
+            closingPhrasesList.classList.add('hidden'); 
+            closeDealBtn.textContent = "Deal Concluded"; // Or keep as is to allow more objections
+            // To re-enable adding more objections after closing:
+            // closeDealBtn.textContent = "Attempt to Close Again / Add More";
+            // Or disable further interaction:
+            // disableObjectionSelection();
+        }
+        
+        document.addEventListener('DOMContentLoaded', initApp);
+
+    </script>
+
+</body>
+</html>
